@@ -1,6 +1,7 @@
 package telem;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import org.json.JSONObject;
 
@@ -9,6 +10,8 @@ import org.json.JSONObject;
  * inicio y fin.
  * Almacena los alquileres realizados en un array estático y proporciona métodos
  * para calcular el precio del alquiler.
+ * Actúa como contexto del patrón Estrategia: delega el cálculo del precio en la
+ * política de precios (PoliticaPrecio) que se le indique.
  * Alquiler
  */
 public class Alquiler {
@@ -20,10 +23,15 @@ public class Alquiler {
 
     private static Alquiler[] alquileres = new Alquiler[1000];
 
-    public static final int PRECIO_BASE = 50;
     private static int contadorAlquileres = 0;
 
     public Alquiler(Vehiculo vehiculo, Cliente cliente, LocalDate fechaInicio, LocalDate fechaFin) {
+        if (vehiculo == null || cliente == null || fechaInicio == null || fechaFin == null) {
+            throw new IllegalArgumentException("Los datos del alquiler son obligatorios");
+        }
+        if (fechaFin.isBefore(fechaInicio)) {
+            throw new IllegalArgumentException("La fecha final no puede preceder a la inicial");
+        }
         this.vehiculo = vehiculo;
         this.cliente = cliente;
         this.fechaInicio = fechaInicio;
@@ -59,9 +67,24 @@ public class Alquiler {
         return fechaFin;
     }
 
-    public int calcularPrecioAlquiler(LocalDate fechaInicio, LocalDate fechaFin) {
-        long dias = java.time.temporal.ChronoUnit.DAYS.between(fechaInicio, fechaFin);
-        return (int) dias * PRECIO_BASE;
+    /**
+     * Número de días del alquiler, incluyendo las fechas de inicio y fin.
+     *
+     * @return días de duración del alquiler
+     */
+    public int getDias() {
+        return (int) ChronoUnit.DAYS.between(fechaInicio, fechaFin) + 1;
+    }
+
+    /**
+     * Calcula el precio del alquiler delegando en la política de precios indicada
+     * (patrón Estrategia). El precio base se obtiene del vehículo alquilado.
+     *
+     * @param politica estrategia de cálculo aplicable a este alquiler
+     * @return precio total del alquiler
+     */
+    public double calcularPrecio(PoliticaPrecio politica) {
+        return politica.calcularPrecio(vehiculo.getPrecioBase(), getDias());
     }
 
     @Override
@@ -75,13 +98,20 @@ public class Alquiler {
         Cliente cliente1 = new Cliente("Juan Pérez", "123456789");
 
         LocalDate hoy = LocalDate.now();
-        Alquiler alquiler1 = new Alquiler(vehiculo1, cliente1, hoy, hoy.plusDays(3)); // Alquiler de 3 días
+        Alquiler alquiler1 = new Alquiler(vehiculo1, cliente1, hoy, hoy.plusDays(2)); // Alquiler de 3 días
 
         System.out.println(alquiler1.toString());
         System.out.println("--------------------------------------------------------");
 
+        // Ejemplo del patrón Estrategia: el mismo alquiler con distintas políticas
+        System.out.println("Política normal:            " + alquiler1.calcularPrecio(new PoliticaNormal()));
+        System.out.println("Política temporada alta:    " + alquiler1.calcularPrecio(new PoliticaTemporadaAlta()));
+        System.out.println("Política ofertón:           " + alquiler1.calcularPrecio(new PoliticaOferton()));
+        System.out.println("Política cliente frecuente: " + alquiler1.calcularPrecio(new PoliticaClienteFrecuente()));
+        System.out.println("--------------------------------------------------------");
+
         Vehiculo vehiculo2 = new VehiculoIndustrial("ABC123", Categoria.NORMAL, 2020, 1000, 3);
-        Alquiler alquiler2 = new Alquiler(vehiculo2, cliente1, hoy, hoy.plusDays(3)); // Alquiler de 3 días
+        Alquiler alquiler2 = new Alquiler(vehiculo2, cliente1, hoy, hoy.plusDays(2)); // Alquiler de 3 días
 
         System.out.println(alquiler2.toString());
         System.out.println("--------------------------------------------------------");
