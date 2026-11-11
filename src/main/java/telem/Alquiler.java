@@ -38,6 +38,17 @@ public class Alquiler {
         this.fechaFin = fechaFin;
     }
 
+    public Alquiler(String jsonString) {
+        this(new JSONObject(jsonString));
+    }
+
+    private Alquiler(JSONObject json) {
+        this(FactoriaVehiculos.getVehiculo(json.getJSONObject("vehiculo").toString()),
+                new Cliente(json.getJSONObject("cliente").toString()),
+                LocalDate.parse(json.getString("fechaInicio")),
+                LocalDate.parse(json.getString("fechaFin")));
+    }
+
     public static Alquiler[] obtenerAlquileres() {
         return alquileres;
     }
