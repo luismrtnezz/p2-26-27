@@ -18,6 +18,15 @@ public abstract class Vehiculo {
         this.matricula = matricula;
         this.categoria = categoria;
         this.annio = annio;
+        this.disponible = true;
+    }
+
+    public Vehiculo(String jsonString) {
+        JSONObject json = new JSONObject(jsonString);
+        this.matricula = json.getString("matricula");
+        this.categoria = Categoria.valueOf(json.getString("categoria"));
+        this.annio = json.getInt("annio");
+        this.disponible = json.getBoolean("disponible");
     }
 
     public String getMatricula() {

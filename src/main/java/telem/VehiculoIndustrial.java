@@ -4,6 +4,13 @@ import org.json.JSONObject;
 
 public class VehiculoIndustrial extends Vehiculo {
 
+    public VehiculoIndustrial(String jsonString) {
+        super(jsonString);
+        JSONObject json = new JSONObject(jsonString);
+        this.capacidadCarga = json.getInt("capacidadCarga");
+        this.numeroEjes = json.getInt("numeroEjes");
+    }
+
     private int capacidadCarga;
     private int numeroEjes;
 
