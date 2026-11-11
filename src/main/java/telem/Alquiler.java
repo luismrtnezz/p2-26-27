@@ -69,19 +69,19 @@ public class Alquiler {
         return new JSONObject(this).toString();
     }
 
-    public static void (String[] args) {
+    public static void main(String[] args) {
         // Crear instancias de Vehiculo y Cliente
         Vehiculo vehiculo1 = new Turismo("ABC123", Categoria.NORMAL, 2020, 5, 400.0);
         Cliente cliente1 = new Cliente("Juan Pérez", "123456789");
-        Alquiler alquiler1 = new Alquiler(vehiculo1, cliente1, new Date(),
-                new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000)); // Alquiler de 3 días
+
+        LocalDate hoy = LocalDate.now();
+        Alquiler alquiler1 = new Alquiler(vehiculo1, cliente1, hoy, hoy.plusDays(3)); // Alquiler de 3 días
 
         System.out.println(alquiler1.toString());
         System.out.println("--------------------------------------------------------");
 
         Vehiculo vehiculo2 = new VehiculoIndustrial("ABC123", Categoria.NORMAL, 2020, 1000, 3);
-        Alquiler alquiler2 = new Alquiler(vehiculo2, cliente1, new Date(),
-                new Date(System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000)); // Alquiler de 3 días
+        Alquiler alquiler2 = new Alquiler(vehiculo2, cliente1, hoy, hoy.plusDays(3)); // Alquiler de 3 días
 
         System.out.println(alquiler2.toString());
         System.out.println("--------------------------------------------------------");
