@@ -27,4 +27,26 @@ public class VehiculoIndustrial extends Vehiculo {
     public String toString() {
         return new JSONObject(this).toString();
     }
+
+    @Override
+    public String getTipo() {
+        return "VehiculoIndustrial";
+    }
+
+    @Override
+    public int getPrecioBase() {
+        int precioBase = 0;
+        switch (getCategoria()) {
+            case NORMAL:
+                precioBase = 70;
+                break;
+            case ESPECIAL:
+                precioBase = 100;
+                break;
+            case SUPERIOR:
+                precioBase = 120;
+                break;
+        }
+        return precioBase;
+    }
 }
